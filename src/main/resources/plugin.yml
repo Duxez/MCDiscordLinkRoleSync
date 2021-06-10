@@ -1,0 +1,16 @@
+name: DiscordLinkRoleSync
+version: ${project.version}
+main: dev.jobrapati.discordlinkrolesync.DiscordLinkRoleSync
+api-version: 1.16
+load: POSTWORLD
+authors: [ Job ]
+description: Link Discord Accounts and sync roles with LuckPerm roles
+commands:
+  link:
+    description: "Link your discord account to your minecraft account"
+    usage: "/<command>"
+    permission: discordlinker.linkaccount
+  forcesync:
+    description: "Force role synchronisation if it failed at link, or you didn't have a correct role yet."
+    usage: "/<command>"
+    permission: discordlinker.linkaccount
