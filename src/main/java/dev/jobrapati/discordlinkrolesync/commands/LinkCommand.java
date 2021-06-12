@@ -25,6 +25,20 @@ public class LinkCommand implements CommandExecutor {
             //based on args do stuff
             String id = "";
             try {
+                String existsCheck = "SELECT * FROM Links WHERE McUser = ?";
+                PreparedStatement checkStatement = Database.getInstance().getConnection().prepareStatement(existsCheck);
+                checkStatement.setString(1, String.valueOf(player.getUniqueId()));
+                ResultSet set = checkStatement.executeQuery();
+
+                if(set.next()) {
+                    if(set.getString("LinkCode") == null)
+                        player.sendMessage("You have already linked your account to a discord account");
+                    else
+                        player.sendMessage(String.format("You can link your account by messaging the bot your link code: %s", set.getString("LinkCode")));
+
+                    return true;
+                }
+
                 boolean success = false;
                 while(!success)
                 {
@@ -35,8 +49,10 @@ public class LinkCommand implements CommandExecutor {
                         success = true;
                     }
                 }
-                String sql = String.format("INSERT INTO Links (McUser, LinkCode) VALUES ('%s', '%s')", player.getUniqueId(), id);
+                String sql = "INSERT INTO Links (McUser, LinkCode) VALUES (?, ?)";
                 PreparedStatement statement = Database.getInstance().getConnection().prepareStatement(sql);
+                statement.setString(1, String.valueOf(player.getUniqueId()));
+                statement.setString(2, id);
                 statement.execute();
                 player.sendMessage(String.format("You can link your account by DMing the Discord bot with code %s", id));
             } catch (Exception e) {
@@ -50,17 +66,17 @@ public class LinkCommand implements CommandExecutor {
     private String GenerateCode() throws SQLException {
         Random random = new Random();
         String id = String.format("%04d", random.nextInt(10000));
-        String sql = String.format("SELECT * FROM Links WHERE LinkCode='%s'", id);
+        String sql = "SELECT * FROM Links WHERE LinkCode=?";
+
         try {
             PreparedStatement statement = Database.getInstance().getConnection().prepareStatement(sql);
+            statement.setString(1, id);
             ResultSet resultSet = statement.executeQuery();
 
             if(!resultSet.next()) {
-                Database.getInstance().getConnection().close();
                 return id;
             }
             else {
-                Database.getInstance().getConnection().close();
                 return "bad";
             }
 

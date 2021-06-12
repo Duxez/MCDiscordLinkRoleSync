@@ -1,5 +1,7 @@
 package dev.jobrapati.discordlinkrolesync.commands;
 
+import com.destroystokyo.paper.profile.PlayerProfile;
+import com.destroystokyo.paper.profile.ProfileProperty;
 import dev.jobrapati.discordlinkrolesync.Database;
 import dev.jobrapati.discordlinkrolesync.DiscordLinkRoleSync;
 import dev.jobrapati.discordlinkrolesync.helpers.SyncRole;
@@ -25,8 +27,9 @@ public class ForceSync implements CommandExecutor {
 
             try
             {
-                String sql = String.format("SELECT DiscordId FROM Links WHERE McUser='%s'", player.getUniqueId());
+                String sql = "SELECT DiscordId FROM Links WHERE McUser=?";
                 PreparedStatement statement = Database.getInstance().getConnection().prepareStatement(sql);
+                statement.setString(1, String.valueOf(player.getUniqueId()));
                 ResultSet set = statement.executeQuery();
                 if(set.next())
                 {
